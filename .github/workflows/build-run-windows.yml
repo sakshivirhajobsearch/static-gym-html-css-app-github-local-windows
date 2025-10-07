@@ -1,0 +1,42 @@
+name: Spring Boot Build and Run on Windows
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-and-run:
+    runs-on: self-hosted  # Ensure it's your Windows 11 runner
+
+    env:
+      JAVA_HOME: 'C:\\Program Files\\Java\\jdk-17'
+      # Do NOT reference env.PATH here – instead use PATH override directly in steps if needed
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Maven
+        uses: stCarolas/setup-maven@v4
+        with:
+          maven-version: '3.9.6'
+
+      - name: Build with Maven
+        shell: cmd
+        run: mvn clean install
+
+      - name: Run Spring Boot Application
+        shell: cmd
+        run: java -jar target\\springboot-gym-html-app-github-windows-1.0.1-SNAPSHOT.jar
+
+      - name: Success Message
+        if: success()
+        shell: cmd
+        run: echo Spring Boot app is running locally!
+
+      - name: Failure Message
+        if: failure()
+        shell: cmd
+        run: echo Build failed!
